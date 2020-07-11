@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Endpoint(models.Model):
     '''
     The Endpoint object represents ML API endpoint.
@@ -12,6 +13,7 @@ class Endpoint(models.Model):
     name = models.CharField(max_length=128)
     owner = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now=True, blank=True)
+
 
 class MLAlgorithm(models.Model):
     '''
@@ -51,7 +53,9 @@ class MLAlgorithmStatus(models.Model):
     active = models.BooleanField()
     created_by = models.CharField(max_length=128)
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
-    parent_mlalgorithm = models.ForeignKey(MLAlgorithm, on_delete=models.CASCADE, related_name="status")
+    parent_mlalgorithm = models.ForeignKey(
+        MLAlgorithm, on_delete=models.CASCADE, related_name="status")
+
 
 class MLRequest(models.Model):
     '''
@@ -70,5 +74,29 @@ class MLRequest(models.Model):
     response = models.CharField(max_length=10000)
     feedback = models.CharField(max_length=10000, blank=True, null=True)
     created_by = models.DateTimeField(auto_now_add=True, blank=True)
-    parent_mlalgorithm = models.ForeignKey(MLAlgorithm, on_delete=models.CASCADE)
+    parent_mlalgorithm = models.ForeignKey(
+        MLAlgorithm, on_delete=models.CASCADE)
 
+
+class ABTest(models.Model):
+    '''
+    The ABTest will keep information about A/B tests.
+    Attributes:
+        title: The title of test.
+        created_by: The name of creator.
+        created_at: The date of test creation.
+        ended_at: The date of test stop.
+        summary: The description with test summary, created at test stop.
+        parent_mlalgorithm_1: The reference to the first corresponding MLAlgorithm.
+        parent_mlalgorithm_2: The reference to the second corresponding MLAlgorithm.
+    '''
+    title = models.CharField(max_length=10000)
+    created_by = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
+    ended_at = models.DateTimeField(blank=True, null=True)
+    summary = models.CharField(max_length=10000, blank=True, null=True)
+
+    parent_mlalgorithm_1 = models.ForeignKey(
+        MLAlgorithm, on_delete=models.CASCADE, related_name="parent_mlalgorithm_1")
+    parent_mlalgorithm_2 = models.ForeignKey(
+        MLAlgorithm, on_delete=models.CASCADE, related_name="parent_mlalgorithm_2")
